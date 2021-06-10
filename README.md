@@ -1,2 +1,2 @@
 # tic_tac_toe
-play a game of tic tac toe
+Hello! Welcome to my very basic tic-tac-toe game!
