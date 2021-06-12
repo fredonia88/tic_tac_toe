@@ -25,7 +25,7 @@ def enter_move(board):
         try:
             move = int(move)
             
-            if move > 10 or move < 1:
+            if not 1 < move < 10:
                 raise NumberMustBeInRange
             
             x = move // 3 + (move % 3 > 0) - 1
