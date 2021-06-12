@@ -1,4 +1,12 @@
 from random import randrange 
+
+class NumberMustBeInRange(Exception):
+    '''used in enter_move method -> input must be an integer'''
+    pass
+
+class MoveIsTaken(Exception):
+    '''used in enter_move method -> move must be available'''
+    pass
     
 def display_board(board):
     line = '+-------' * 3 + '+'
@@ -6,36 +14,39 @@ def display_board(board):
     line3 = '|   ' + str(board[0][0]) + '   ' + '|   ' + str(board[0][1]) + '   ' + '|   ' + str(board[0][2]) + '   ' + '|'
     line4 = '|   ' + str(board[1][0]) + '   ' + '|   ' + str(board[1][1]) + '   ' + '|   ' + str(board[1][2]) + '   ' + '|'
     line5 = '|   ' + str(board[2][0]) + '   ' + '|   ' + str(board[2][1]) + '   ' + '|   ' + str(board[2][2]) + '   ' + '|'
-    print(line)
-    print(line2)
-    print(line3)
-    print(line2)
-    print(line)
-    print(line2)
-    print(line4)
-    print(line2)
-    print(line)
-    print(line2)
-    print(line5)
-    print(line2)
-    print(line)
+    
+    board_lines = [line, line2, line3, line2, line, line2, line4, line2, line, line2, line5, line2, line]
+    for line in board_lines:
+        print(line)
 
 def enter_move(board):
-    try:
-        move = int(input('Enter your move: '))
-        x = move // 3 + (move % 3 > 0) - 1
-        if move % 3 == 0:
-            y = 2
-        elif move in (2, 5, 8):
-            y = 1
-        else:
-            y = 0
-        if (x, y) in make_list_of_free_fields(board):
-            board[x][y] = 'O'
-        else:
-            print('That move is taken. Choose a different move.')
-    except:
-        print('Move must be an int greater than 0 and less than 10.')
+    while True:
+        move = input('Enter your move: ')
+        try:
+            move = int(move)
+            
+            if move > 10 or move < 1:
+                raise NumberMustBeInRange
+            
+            x = move // 3 + (move % 3 > 0) - 1
+            if move % 3 == 0:
+                y = 2
+            elif move in (2, 5, 8):
+                y = 1
+            else:
+                y = 0
+            if (x, y) in make_list_of_free_fields(board):
+                board[x][y] = 'O'
+                break
+            else:
+                raise MoveIsTaken
+                
+        except NumberMustBeInRange:
+            print('Move must be greater than 0 and less than 10')
+        except MoveIsTaken:
+            print('That space is occupied! Choose a different move.')
+        except:
+            print('Move must be an integer')
 
 def make_list_of_free_fields(board):
     free_spaces = []
@@ -47,7 +58,7 @@ def make_list_of_free_fields(board):
     return free_spaces
 
 def victory_for(board, sign):
-    win_list = [['O', 'O', 'O'], ['X', 'X', 'X']]
+    win_list = [['O'] * 3, ['X'] * 3]
     
     for x in range(3):
         if board[x] in win_list:
@@ -67,7 +78,7 @@ def victory_for(board, sign):
 
 def draw_move(board):
     move_completed = False
-    while move_completed == False:
+    while not move_completed:
         move = randrange(10)
         x = move // 3 + (move % 3 > 0) - 1
         if move % 3 == 0:
@@ -82,22 +93,21 @@ def draw_move(board):
 
 def main():
     board = [[1, 2, 3], [4, 'X', 6], [7, 8, 9]]
-    end_game = False
-    while end_game == False:       
+    while True:
         display_board(board)
         enter_move(board)
-        if victory_for(board, 'O') == True:
-            end_game = True
+        if victory_for(board, 'O'):
             display_board(board)
-            return print('You won!')
+            print('You won!')
+            break
         draw_move(board)
-        if victory_for(board, 'X') == True:
-            end_game = True
+        if victory_for(board, 'X'):
             display_board(board)
-            return print('Computer won!')
+            print('Computer won!')
+            break
         if len(make_list_of_free_fields(board)) == 0:
-            end_game = True
-            return print('Tie game!')
+            print('Tie game!')
+            break
 
 if __name__ == '__main__':
     main()
